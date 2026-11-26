@@ -18,22 +18,28 @@ namespace ABE
 {
     public interface IParam_config
     {
-        string Export_path { get; }
-        int Smoothing_iterations { get; }
-        double Smoothing_strength { get; }
+        string Export_Path { get; }
+        int Smoothing_Iterations { get; }
+        double Smoothing_Strength { get; }
+        double Expansion_Strength { get; }
+        double Max_Displacement { get; }
     }
 
-    public class param_config : IParam_config
+    public class Param_config : IParam_config
     {
-        public string Export_path { get; private set; }
-        public int Smoothing_iterations { get; private set; }
-        public double Smoothing_strength { get; private set; }
+        public string Export_Path { get; private set; }
+        public int Smoothing_Iterations { get; private set; }
+        public double Smoothing_Strength { get; private set; }
+        public double Expansion_Strength { get; private set; }
+        public double Max_Displacement { get; private set; }
 
-        public param_config()
+        public Param_config()
         {
-            Export_path = GetExportPath();
-            Smoothing_iterations = GetSmoothingIterations();
-            Smoothing_strength = GetSmoothingStrength();
+            Export_Path = GetExportPath();
+            Smoothing_Iterations = GetSmoothingIterations();
+            Smoothing_Strength = GetSmoothingStrength();
+            Expansion_Strength = GetExpansionStrength();
+            Max_Displacement = GetMaxDisplacement();
         }
 
         private string GetExportPath()
@@ -109,6 +115,56 @@ namespace ABE
             }
 
             return strength;
+        }
+
+        private double GetExpansionStrength()
+        {
+            string configFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "param_config.xml");
+
+            if (!File.Exists(configFile))
+            {
+                throw new FileNotFoundException("param_config.xml was not found.", configFile);
+            }
+            XDocument config = XDocument.Load(configFile);
+
+            string expansionStrength = config.Descendants("expansion_strength").FirstOrDefault()?.Value?.Trim();
+
+            if (string.IsNullOrWhiteSpace(expansionStrength))
+            {
+                throw new InvalidDataException("Expansion strength is missing from param_config.xml.");
+            }
+
+            if (!double.TryParse(expansionStrength, out double strength))
+            {
+                throw new InvalidDataException("Invalid value for expansion strength in param_config.xml.");
+            }
+
+            return strength;
+        }
+
+        private double GetMaxDisplacement()
+        {
+            string configFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "param_config.xml");
+
+            if (!File.Exists(configFile))
+            {
+                throw new FileNotFoundException("param_config.xml was not found.", configFile);
+            }
+            XDocument config = XDocument.Load(configFile);
+
+            string maxDisplacement = config.Descendants("max_displacement").FirstOrDefault()?.Value?.Trim();
+
+            if (string.IsNullOrWhiteSpace(maxDisplacement))
+            {
+                throw new InvalidDataException("Max displacement is missing from param_config.xml.");
+            }
+
+            if (!double.TryParse(maxDisplacement, out double displacement))
+            {
+                throw new InvalidDataException("Invalid value for max displacement in param_config.xml.");
+            }
+
+            return displacement;
         }
     }
 }

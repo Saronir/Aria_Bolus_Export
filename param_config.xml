@@ -2,6 +2,8 @@
 <params>
 	<version>1</version>
 	<export_path>H:\FVCC\Radiation Therapy\3D prints\non-clinical_testing</export_path>
-	<smoothing_iterations>2</smoothing_iterations>
-	<smoothing_strength>0.2</smoothing_strength>
+	<smoothing_iterations>20</smoothing_iterations>
+	<smoothing_strength>0.50</smoothing_strength>
+	<expansion_strength>-0.53</expansion_strength>
+	<max_displacement>0.50</max_displacement>
 </params>	

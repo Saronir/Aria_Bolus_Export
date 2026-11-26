@@ -26,7 +26,7 @@ namespace VMS.TPS
                 throw new InvalidOperationException("No structure set selected.");
             }
 
-            IParam_config paramConfig = new param_config(); //Load the parameter configuration from the param_config.xml file
+            IParam_config paramConfig = new Param_config(); //Load the parameter configuration from the param_config.xml file
 
             string patientId = context.Patient.Id; //Get the patient ID
             string bolusId = patientId.Substring(patientId.Length - 3);
@@ -48,10 +48,13 @@ namespace VMS.TPS
                     IMesh mesh = new Mesh(structure);
 
                     //Smooth the mesh using a basic laplacian smoothing algorithm
-                    mesh.Smooth(paramConfig.Smoothing_iterations, paramConfig.Smoothing_strength);
+                    //mesh.LaplacianSmooth(paramConfig.Smoothing_Iterations, paramConfig.Smoothing_Strength);
+
+                    //Smooth the mesh using constrained taubin smoothing algorithm
+                    mesh.Constrained_Taubin_Smooth(structure.MeshGeometry, paramConfig.Smoothing_Iterations, paramConfig.Smoothing_Strength, paramConfig.Expansion_Strength, paramConfig.Max_Displacement);
 
                     //prepare the export path by creating a new folder with the current date in the export path specified in the param_config.xml file
-                    string basePath = paramConfig.Export_path;
+                    string basePath = paramConfig.Export_Path;
                     string dateFolder = DateTime.Today.ToString("yyyy-MM-dd");
                     string folderPath = Path.Combine(basePath, dateFolder);
                     Directory.CreateDirectory(folderPath);
